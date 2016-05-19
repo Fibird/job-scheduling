@@ -3,9 +3,12 @@
 *.ko
 *.obj
 *.elf
+<<<<<<< HEAD
 *.cbp
 *.layout
 *.depend
+=======
+>>>>>>> e2f6dc72a57a5819ff702c1e8f321df9a055e896
 
 # Precompiled Headers
 *.gch
@@ -33,8 +36,11 @@
 
 # Debug files
 *.dSYM/
+<<<<<<< HEAD
 # obg file
 obj/
 
 # bin file
 bin/
+=======
+>>>>>>> e2f6dc72a57a5819ff702c1e8f321df9a055e896

@@ -4,7 +4,6 @@
 #include "schedule.h"
 #include "JCB.h"
 
-static JCB *head;
 static int time_count = 0;
 void join(JCB *ptr)
 {
@@ -51,6 +50,44 @@ void FCFS_schedule()
         }
     }
 }
+void SJF_schedule()
+{
+    JCB *hp, *lp, *p;
+    int i;
+    p = head;
+    //lp = head->link;
+    while (p != NULL)
+    {
+        p = p->link;
+        hp = head;
+        lp = head->link;
+        while (lp != NULL)
+        {
+            if (hp->jjcb.runtime > lp->jjcb.runtime)
+            {
+                hp = lp;
+            }
+            lp = lp->link;
+        }
+        while (1)
+        {
+            hp->state = READY;
+            Sleep(1000);
+            hp->jjcb.runtime++;
+            wait_time();
+            if (hp->jjcb.runtime == hp->jjcb.reqtime)
+            {
+                i = hp->jjcb.arrtime;
+                job_info[i] = hp->jjcb;
+                //it is useless now
+                hp->state = FINISH;
+                destory(hp);
+                break;
+            }
+        }
+    }
+}
+
 void wait_time()
 {
     JCB *p;

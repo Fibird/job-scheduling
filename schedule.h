@@ -2,7 +2,7 @@
 #define SCHEDULE_H_INCLUDED
 #include "JCB.h"
 #define getpch(type) (type*)malloc(sizeof(type))
-
+JCB *head;
 #define WAIT 0
 #define READY 1
 #define FINISH -1
@@ -15,6 +15,7 @@ void join(JCB *);
 void get_info(JCB* job);
 //schedule jobs by FCFS
 void FCFS_schedule();
+void SJF_schedule();
 //update wait time of every job
 void wait_time();
 //display information in real time in another thread

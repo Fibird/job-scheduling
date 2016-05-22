@@ -26,31 +26,7 @@ void join(JCB *ptr)
     ptr->link = NULL;
 }
 
-void FCFS_schedule()
-{
-    int i;
-    while (head != NULL)
-    {
-        head->state = 1;
-        JCB *p = head;
-        while (1)
-        {
-            Sleep(1000);
-            p->jjcb.runtime++;
-            wait_time();
-            if (p->jjcb.runtime == p->jjcb.reqtime)
-            {
-                i = p->jjcb.arrtime;
-                job_info[i] = p->jjcb;
-                //it is useless now
-                p->state = FINISH;
-                destory(p);
-                break;
-            }
-        }
-    }
-}
-void SJF_schedule()
+void HRN_schedule()
 {
     JCB *hp, *lp, *p;
     int i;
@@ -63,7 +39,7 @@ void SJF_schedule()
         lp = head->link;
         while (lp != NULL)
         {
-            if (hp->jjcb.reqtime > lp->jjcb.reqtime)
+            if (hp->priority < lp->priority)
             {
                 hp = lp;
             }
@@ -87,7 +63,6 @@ void SJF_schedule()
         }
     }
 }
-
 void wait_time()
 {
     JCB *p;
@@ -99,6 +74,12 @@ void wait_time()
         {
             p->jjcb.waitime++;
         }
+        p = p->link;
+    }
+    p = head;
+    while (p != NULL)
+    {
+        p->priority = (p->jjcb.waitime + p->jjcb.reqtime) / p->jjcb.reqtime;
         p = p->link;
     }
 }

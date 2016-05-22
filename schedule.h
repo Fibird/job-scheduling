@@ -15,7 +15,10 @@ void join(JCB *);
 void get_info(JCB* job);
 //schedule jobs by FCFS
 void FCFS_schedule();
+//schedule jobs by SJF
 void SJF_schedule();
+//schedule jobs by HRN
+void HRN_schedule();
 //update wait time of every job
 void wait_time();
 //display information in real time in another thread

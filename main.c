@@ -22,9 +22,8 @@ int main()
     system("CLS");
     //create another thread to display info of jobs in real time
     pthread_create(&dis_thread, NULL, display, NULL);
-    //use FCFS to schedule jobs
-    //FCFS_schedule();
-    SJF_schedule();
+    //use HRN to schedule jobs
+    HRN_schedule();
     pthread_join(dis_thread, &dis_result);
     printf("All jobs has finished.\n");
     printf("*************The info of these jobs after running*************\n");

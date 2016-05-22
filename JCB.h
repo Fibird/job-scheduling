@@ -9,12 +9,11 @@ typedef struct job
     int arrtime;
     int waitime;
     int resource;
-    struct job* link;
 }JOB;
 
 typedef struct jcb
 {
-    JOB* jjcb;
+    JOB jjcb;
     int state;
     int priority;
     struct jcb* link;

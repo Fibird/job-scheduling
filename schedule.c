@@ -63,15 +63,15 @@ void SJF_schedule()
         lp = head->link;
         while (lp != NULL)
         {
-            if (hp->jjcb.runtime > lp->jjcb.runtime)
+            if (hp->jjcb.reqtime > lp->jjcb.reqtime)
             {
                 hp = lp;
             }
             lp = lp->link;
         }
+        hp->state = READY;
         while (1)
         {
-            hp->state = READY;
             Sleep(1000);
             hp->jjcb.runtime++;
             wait_time();
@@ -135,18 +135,21 @@ void destory(JCB *p)
     {
         head = p->link;
     }
-    while (!(cur->jjcb.name == p->jjcb.name || cur == NULL))
-    {
-        pre = cur;
-        cur = cur->link;
-    }
-    if (cur != NULL)
-    {
-        pre->link = cur->link;
-    }
     else
     {
-        pre->link = NULL;
+        while (!(cur->jjcb.name == p->jjcb.name || cur == NULL))
+        {
+            pre = cur;
+            cur = cur->link;
+        }
+        if (cur != NULL)
+        {
+            pre->link = cur->link;
+        }
+        else
+        {
+            pre->link = NULL;
+        }
     }
     p = NULL;
     free(p);
@@ -158,7 +161,7 @@ void *display(void *arg)
     {
         p = head;
         printf("************************JOB INFO*************************\n");
-        //printf("job name\tarrive time\tpriority\twait time\n");
+        printf("job name\tarrive time\tpriority\twait time\n");
         while (p != NULL)
         {
             if (p->state == 1)
@@ -166,8 +169,8 @@ void *display(void *arg)
                 printf("*******job %s is running, its running time is %d sec*******\n",
                        p->jjcb.name,
                        p->jjcb.runtime);
-                printf("***********************************************************\n");
-                printf("job name\tarrive time\tpriority\twait time\n");
+                //printf("***********************************************************\n");
+                //printf("job name\tarrive time\tpriority\twait time\n");
             }
             else if (p->state == 0)
             {

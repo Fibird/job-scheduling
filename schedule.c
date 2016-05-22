@@ -5,8 +5,7 @@
 #include "JCB.h"
 
 static JCB *head;
-int time_count = 0;
-
+static int time_count = 0;
 void join(JCB *ptr)
 {
     JCB *p = NULL;
@@ -42,14 +41,11 @@ void FCFS_schedule()
             wait_time();
             if (p->jjcb.runtime == p->jjcb.reqtime)
             {
-                i = p->jjcb.arrtime - 1;
+                i = p->jjcb.arrtime;
                 job_info[i] = p->jjcb;
-                //job_info[i].arrtime = p->jjcb.arrtime;
-                //job_info[i].name = p->jjcb.name;
-                //job_info[i].reqtime = p->jjcb.reqtime;
-                //job_info[i].resource = p->jjcb.resource;
+                //it is useless now
+                p->state = FINISH;
                 destory(p);
-                //p->state = FINISH;
                 break;
             }
         }
@@ -72,9 +68,6 @@ void wait_time()
 void input(int num)
 {
     int i;
-    //printf("Please enter the number of the process: ");
-    //scanf("%d", &num);
-    //static JOB job_info[num];
     JCB *ptr;
 
     for (i = 0; i < num; i++)
@@ -85,6 +78,8 @@ void input(int num)
         scanf("%s", ptr->jjcb.name);
         ptr->priority = num - i;
         ptr->jjcb.waitime = 0;
+        printf("Please enter the number of resource the job need: ");
+        scanf("%d", &ptr->jjcb.resource);
         printf("Please enter the time of the job need: ");
         scanf("%d", &ptr->jjcb.reqtime);
         printf("\n");
@@ -125,15 +120,17 @@ void *display(void *arg)
     while (head != NULL)
     {
         p = head;
-        printf("**********************PROCESSES INFO***********************\n");
-        printf("job name\tarrive time\tpriority\twait time\n");
+        printf("************************JOB INFO*************************\n");
+        //printf("job name\tarrive time\tpriority\twait time\n");
         while (p != NULL)
         {
             if (p->state == 1)
             {
-                printf("******job %s is running, its running time is %d sec******\n",
+                printf("*******job %s is running, its running time is %d sec*******\n",
                        p->jjcb.name,
                        p->jjcb.runtime);
+                printf("***********************************************************\n");
+                printf("job name\tarrive time\tpriority\twait time\n");
             }
             else if (p->state == 0)
             {
@@ -142,7 +139,7 @@ void *display(void *arg)
             p = p->link;
         }
         Sleep(1000);
-        //ÇåÆÁ²Ù×÷
+        //clear screen
         system("CLS");
     }
     pthread_exit(0);
@@ -151,6 +148,6 @@ void *display(void *arg)
 
 void get_info(JCB *job)
 {
-    printf("%s\t%d\t%d\t%d\n", job->jjcb.name, job->jjcb.arrtime,
+    printf("%-8s\t%-11d\t%-8d\t%-9d\n", job->jjcb.name, job->jjcb.arrtime,
            job->priority, job->jjcb.waitime);
 }

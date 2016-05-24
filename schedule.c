@@ -29,25 +29,57 @@ void join(JCB *ptr)
 
 void FCFS_schedule()
 {
+    JCB *p = NULL;
+    JCB *scan = NULL;
     int i;
+    int remainder = 0;
+    int TIME_SLICE = 3;
+
     while (head != NULL)
     {
-        head->state = 1;
-        JCB *p = head;
-        while (1)
+        scan = head;
+        //scan the queue of all jobs,
+        //and allocate resource to them
+        //if resource is enough
+        while (scan != NULL)
         {
-            Sleep(1000);
-            p->jjcb.runtime++;
-            wait_time();
-            if (p->jjcb.runtime == p->jjcb.reqtime)
+            if (scan->jjcb.resource < RESOURCE)
             {
-                i = p->jjcb.arrtime;
-                job_info[i] = p->jjcb;
-                //it is useless now
-                p->state = FINISH;
-                destory(p);
-                break;
+                RESOURCE -= scan->jjcb.resource;
+                scan->state = 1;
             }
+            scan = scan->link;
+        }
+        p = head;
+        while (p != NULL)
+        {
+            if (p->state == 1)
+            {
+                //进程所需时间对时间片取余
+                remainder = p->jjcb.reqtime % TIME_SLICE;
+                if ((p->jjcb.reqtime - p->jjcb.runtime) == remainder)
+                {
+                    p->jjcb.runtime += remainder;
+                }
+                else
+                {
+                    p->jjcb.runtime += TIME_SLICE;
+                }
+                //p->state = 1;
+                Sleep(1000 * TIME_SLICE);
+                wait_time();
+                //p->state = 0;
+                if (p->jjcb.runtime == p->jjcb.reqtime)
+                {
+                    i = p->jjcb.arrtime;
+                    job_info[i] = p->jjcb;
+                    //it is useless now
+                    p->state = FINISH;
+                    RESOURCE += p->jjcb.resource;
+                    destory(p);
+                }
+            }
+            p = p->link;
         }
     }
 }

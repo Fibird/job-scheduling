@@ -7,6 +7,9 @@
 #define READY 1
 #define FINISH -1
 
+//Assume the number of system resources is 10
+static int RESOURCE = 10;
+
 //array to save the information of jobs after it is finished
 JOB *job_info;
 //append new job in the queue

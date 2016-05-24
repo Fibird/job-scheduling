@@ -152,17 +152,19 @@ void *display(void *arg)
     while (head != NULL)
     {
         p = head;
+        printf("*****************NUM OF RESOURCE:%d**********************\n", RESOURCE);
         printf("************************JOB INFO*************************\n");
-        //printf("job name\tarrive time\tpriority\twait time\n");
+        printf("job name\tarrive time\tpriority\twait time\tstate\trun time\n");
         while (p != NULL)
         {
             if (p->state == 1)
             {
-                printf("*******job %s is running, its running time is %d sec*******\n",
-                       p->jjcb.name,
-                       p->jjcb.runtime);
-                printf("***********************************************************\n");
-                printf("job name\tarrive time\tpriority\twait time\n");
+                //printf("*******job %s is running, its running time is %d sec*******\n",
+                       //p->jjcb.name,
+                       //p->jjcb.runtime);
+                //printf("***********************************************************\n");
+                //printf("job name\tarrive time\tpriority\twait time\n");
+                get_info(p);
             }
             else if (p->state == 0)
             {
@@ -180,6 +182,6 @@ void *display(void *arg)
 
 void get_info(JCB *job)
 {
-    printf("%-8s\t%-11d\t%-8d\t%-9d\n", job->jjcb.name, job->jjcb.arrtime,
-           job->priority, job->jjcb.waitime);
+    printf("%-8s\t%-11d\t%-8d\t%-9d\t%d\t%d\n", job->jjcb.name, job->jjcb.arrtime,
+           job->priority, job->jjcb.waitime, job->state, job->jjcb.runtime);
 }

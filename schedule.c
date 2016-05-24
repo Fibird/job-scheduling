@@ -5,6 +5,7 @@
 #include "JCB.h"
 
 static int time_count = 0;
+static int RESOURCE = 10;
 void join(JCB *ptr)
 {
     JCB *p = NULL;
@@ -26,64 +27,77 @@ void join(JCB *ptr)
     ptr->link = NULL;
 }
 
-void FCFS_schedule()
+void PSA_schedule()
 {
+    JCB *p;
+    JCB *hp, *lp;
+    //scan all the jobs and allocate resource to jobs
+    JCB *scan;
     int i;
+    int remainder = 0;
+    int TIME_SLICE = 3;
+    //p = head;
+    //lp = head->link;
     while (head != NULL)
     {
-        head->state = 1;
-        JCB *p = head;
-        while (1)
+        scan = head;
+        while (scan != NULL)
         {
-            Sleep(1000);
-            p->jjcb.runtime++;
-            wait_time();
-            if (p->jjcb.runtime == p->jjcb.reqtime)
+            hp = head;
+            lp = head->link;
+            //find the job which has highest priority
+            while (lp != NULL)
             {
-                i = p->jjcb.arrtime;
-                job_info[i] = p->jjcb;
-                //it is useless now
-                p->state = FINISH;
-                destory(p);
+                if ((hp->priority < lp->priority) && (lp->state != READY))
+                {
+                    hp = lp;
+                }
+                lp = lp->link;
+            }
+            if (hp->jjcb.resource < RESOURCE)
+            {
+                hp->state = READY;
+                RESOURCE -= hp->jjcb.resource;
+            }
+            else
+            {
+                //if the job of higher priority
+                //don't have enough resource,
+                //wait until resource is enough
                 break;
             }
+            scan = scan->link;
         }
-    }
-}
-void SJF_schedule()
-{
-    JCB *hp, *lp, *p;
-    int i;
-    p = head;
-    //lp = head->link;
-    while (p != NULL)
-    {
-        p = p->link;
-        hp = head;
-        lp = head->link;
-        while (lp != NULL)
+        p = head;
+        while (p != NULL)
         {
-            if (hp->jjcb.reqtime > lp->jjcb.reqtime)
+            if (p->state == READY)
             {
-                hp = lp;
+                //进程所需时间对时间片取余
+                remainder = p->jjcb.reqtime % TIME_SLICE;
+                if ((p->jjcb.reqtime - p->jjcb.runtime) == remainder)
+                {
+                    p->jjcb.runtime += remainder;
+                }
+                else
+                {
+                    p->jjcb.runtime += TIME_SLICE;
+                }
+                //p->state = 1;
+                Sleep(1000 * TIME_SLICE);
+                wait_time();
+                //p->state = 0;
+                if (p->jjcb.runtime == p->jjcb.reqtime)
+                {
+                    i = p->jjcb.arrtime;
+                    job_info[i] = p->jjcb;
+                    //it is useless now
+                    p->state = FINISH;
+                    RESOURCE += p->jjcb.resource;
+                    destory(p);
+                }
             }
-            lp = lp->link;
-        }
-        hp->state = READY;
-        while (1)
-        {
-            Sleep(1000);
-            hp->jjcb.runtime++;
-            wait_time();
-            if (hp->jjcb.runtime == hp->jjcb.reqtime)
-            {
-                i = hp->jjcb.arrtime;
-                job_info[i] = hp->jjcb;
-                //it is useless now
-                hp->state = FINISH;
-                destory(hp);
-                break;
-            }
+            p = p->link;
         }
     }
 }
@@ -113,12 +127,12 @@ void input(int num)
         ptr = getpch(JCB);
         printf("Please enter the name of the job: ");
         scanf("%s", ptr->jjcb.name);
-        ptr->priority = num - i;
         ptr->jjcb.waitime = 0;
         printf("Please enter the number of resource the job need: ");
         scanf("%d", &ptr->jjcb.resource);
         printf("Please enter the time of the job need: ");
         scanf("%d", &ptr->jjcb.reqtime);
+        ptr->priority = 20 - ptr->jjcb.reqtime;
         printf("\n");
         ptr->jjcb.runtime = 0;
         ptr->state = WAIT;
@@ -160,22 +174,12 @@ void *display(void *arg)
     while (head != NULL)
     {
         p = head;
+        printf("*****************NUM OF RESOURCE:%d**********************\n", RESOURCE);
         printf("************************JOB INFO*************************\n");
-        printf("job name\tarrive time\tpriority\twait time\n");
+        printf("job name\tarrive time\tpriority\twait time\tstate\trun time\n");
         while (p != NULL)
         {
-            if (p->state == 1)
-            {
-                printf("*******job %s is running, its running time is %d sec*******\n",
-                       p->jjcb.name,
-                       p->jjcb.runtime);
-                //printf("***********************************************************\n");
-                //printf("job name\tarrive time\tpriority\twait time\n");
-            }
-            else if (p->state == 0)
-            {
-                get_info(p);
-            }
+            get_info(p);
             p = p->link;
         }
         Sleep(1000);
@@ -188,6 +192,6 @@ void *display(void *arg)
 
 void get_info(JCB *job)
 {
-    printf("%-8s\t%-11d\t%-8d\t%-9d\n", job->jjcb.name, job->jjcb.arrtime,
-           job->priority, job->jjcb.waitime);
+    printf("%-8s\t%-11d\t%-8d\t%-9d\t%d\t%d\n", job->jjcb.name, job->jjcb.arrtime,
+           job->priority, job->jjcb.waitime, job->state, job->jjcb.runtime);
 }

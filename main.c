@@ -24,7 +24,7 @@ int main()
     pthread_create(&dis_thread, NULL, display, NULL);
     //use FCFS to schedule jobs
     //FCFS_schedule();
-    SJF_schedule();
+    PSA_schedule();
     pthread_join(dis_thread, &dis_result);
     printf("All jobs has finished.\n");
     printf("*************The info of these jobs after running*************\n");

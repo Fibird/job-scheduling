@@ -14,8 +14,7 @@ void join(JCB *);
 //acquire the information of the job
 void get_info(JCB* job);
 //schedule jobs by FCFS
-void FCFS_schedule();
-void SJF_schedule();
+void PSA_schedule();
 //update wait time of every job
 void wait_time();
 //display information in real time in another thread
